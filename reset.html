@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - DiaPilot</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f5; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="card" id="form-card">
+        <h2>Reset Password</h2>
+        <p>Enter your new password below.</p>
+        <input type="password" id="password" placeholder="New Password" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+        <button onclick="resetPassword()">Update Password</button>
+        <p id="error-msg" style="color: red; font-size: 0.9rem;"></p>
+    </div>
+
+    <div class="card hidden" id="success-card" style="text-align: center;">
+        <h2 style="color: green;">Success! ✅</h2>
+        <p>Your password has been updated.</p>
+        <p>You can return to the app and login.</p>
+    </div>
+
+    <script>
+        const client = new Appwrite.Client();
+        const account = new Appwrite.Account(client);
+
+        // TODO: REPLACE WITH YOUR PROJECT ID
+        client
+            .setEndpoint('https://cloud.appwrite.io/v1')
+            .setProject('69611612001dcf8e3cca');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const secret = urlParams.get('secret');
+
+        async function resetPassword() {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const errorMsg = document.getElementById('error-msg');
+
+            if (password !== confirm) {
+                errorMsg.innerText = "Passwords do not match.";
+                return;
+            }
+
+            try {
+                await account.updateRecovery(userId, secret, password, confirm);
+                document.getElementById('form-card').classList.add('hidden');
+                document.getElementById('success-card').classList.remove('hidden');
+            } catch (error) {
+                errorMsg.innerText = error.message;
+            }
+        }
+    </script>
+</body>
+</html>

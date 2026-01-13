@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification - DiaPilot</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f5; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 id="status">Verifying...</h2>
+        <p id="message">Please wait while we verify your email.</p>
+    </div>
+
+    <script>
+        const client = new Appwrite.Client();
+        const account = new Appwrite.Account(client);
+
+        // TODO: REPLACE WITH YOUR PROJECT ID
+        client
+            .setEndpoint('https://cloud.appwrite.io/v1')
+            .setProject('69611612001dcf8e3cca'); 
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        const secret = urlParams.get('secret');
+
+        account.updateVerification(userId, secret)
+            .then(() => {
+                document.getElementById('status').innerText = 'Verified! ✅';
+                document.getElementById('status').className = 'success';
+                document.getElementById('message').innerText = 'Your email has been verified. You can now close this window and login to the app.';
+            })
+            .catch((error) => {
+                document.getElementById('status').innerText = 'Failed ❌';
+                document.getElementById('status').className = 'error';
+                document.getElementById('message').innerText = error.message;
+            });
+    </script>
+</body>
+</html>
